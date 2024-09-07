@@ -11,4 +11,10 @@ router.post(
   AuthControllers.registerUser,
 );
 
+router.post(
+  '/login',
+  reqBodyValidator(AuthValidationSchemas.loginUser),
+  AuthControllers.loginUser,
+);
+
 export const AuthRoutes = router;

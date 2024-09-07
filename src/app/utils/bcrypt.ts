@@ -11,3 +11,17 @@ export const hashPassword = async (planPassword: string) => {
     throw new ApiError(httpStatus.BAD_REQUEST, error.message);
   }
 };
+
+export const comparePassword = async (
+  plainPassword: string,
+  hashedPassword: string,
+) => {
+  try {
+    const isMatched = await bcrypt.compare(plainPassword, hashedPassword);
+    if (!isMatched) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'Wrong password');
+    }
+  } catch (error: any) {
+    throw new ApiError(httpStatus.BAD_REQUEST, error.message);
+  }
+};

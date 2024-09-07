@@ -3,11 +3,19 @@ import config from './app/config';
 import { ApplicationRouter } from './app/routes';
 import notFoundHandler from './app/middlewares/notFoundHandler';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // application
 const app: Application = express();
 
 // parser
+app.use(
+  cors({
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   express.urlencoded({

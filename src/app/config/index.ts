@@ -9,6 +9,7 @@ const config = {
   node_env: process.env.NODE_ENV as string,
   app_name: process.env.APP_NAME as string,
   client_url: process.env.CLIENT_URL as string,
+  refresh_token_name: process.env.REFRESH_TOKEN_NAME as string,
   jwt: {
     access_token_secret: process.env.ACCESS_JWT_SECRET as string,
     access_token_expire: process.env.ACCESS_JWT_EXPIRE as string,
