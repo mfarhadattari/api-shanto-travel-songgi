@@ -32,4 +32,10 @@ router.patch(
   AuthControllers.updateProfile,
 );
 
+router.post(
+  '/reset-password',
+  reqBodyValidator(AuthValidationSchemas.resetPassword),
+  AuthControllers.resetPassword,
+);
+
 export const AuthRoutes = router;

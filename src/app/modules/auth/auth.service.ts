@@ -6,6 +6,7 @@ import { ILoginUser, IRegisterUser, IUpdateUser } from './auth.interface';
 import { USER_STATUS } from '@prisma/client';
 import { generateToken, ITokenPayload } from '../../utils/jwt';
 import config from '../../config';
+import { sendPasswordResetMail } from './auth.utils';
 
 /* --------------->> Register User <---------------- */
 const registerUser = async (payload: IRegisterUser) => {
@@ -145,9 +146,39 @@ const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
   return result;
 };
 
+/* --------------->> Reset Password <---------------- */
+const resetPassword = async (payload: { email: string }) => {
+  // check user existence
+  const isUserExist = await prismaDB.user.findUnique({
+    where: {
+      email: payload.email,
+      status: USER_STATUS.active,
+    },
+  });
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'User not found using this email');
+  }
+
+  // generate reset token and link
+  const tokenPayload: ITokenPayload = {
+    id: isUserExist.id,
+    email: isUserExist.email,
+    role: isUserExist.role,
+  };
+  const resetToken = await generateToken(tokenPayload, {
+    secret: config.jwt.reset_token_secret,
+    expiresIn: config.jwt.reset_token_expire,
+  });
+  const resetLink = `${config.client_url}/reset-password?email=${payload.email}&token=${resetToken}`;
+
+  // send email
+  await sendPasswordResetMail(payload.email, resetLink);
+};
+
 export const AuthServices = {
   registerUser,
   loginUser,
   userProfile,
   updateProfile,
+  resetPassword,
 };

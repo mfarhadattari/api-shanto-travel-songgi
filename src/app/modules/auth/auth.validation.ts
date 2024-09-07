@@ -35,8 +35,17 @@ const updateUser = z.object({
   }),
 });
 
+const resetPassword = z.object({
+  body: z.object({
+    email: z.string({ required_error: 'Please provide email' }).email({
+      message: 'Please provide valid email address',
+    }),
+  }),
+});
+
 export const AuthValidationSchemas = {
   registerUser,
   loginUser,
   updateUser,
+  resetPassword,
 };
