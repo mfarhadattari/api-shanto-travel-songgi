@@ -1,4 +1,6 @@
+import httpStatus from 'http-status';
 import prismaDB from '../../../prismaDB';
+import ApiError from '../../error/ApiError';
 import { hashPassword } from '../../utils/bcrypt';
 import { IRegisterUser } from './auth.interface';
 
@@ -12,7 +14,7 @@ const registerUser = async (payload: IRegisterUser) => {
   });
 
   if (userExist) {
-    throw new Error('Email already registered');
+    throw new ApiError(httpStatus.FORBIDDEN, 'Email is already in use');
   }
 
   //   store user into db
