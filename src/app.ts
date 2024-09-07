@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from 'express';
 import config from './app/config';
 import { ApplicationRouter } from './app/routes';
+import notFoundHandler from './app/middlewares/notFoundHandler';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
 
 // application
 const app: Application = express();
@@ -29,7 +31,9 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api', ApplicationRouter);
 
 // global error handler
+app.use(globalErrorHandler);
 
 // not found handler
+app.use(notFoundHandler);
 
 export default app;
