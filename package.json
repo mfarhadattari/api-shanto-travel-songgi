@@ -1,0 +1,58 @@
+{
+  "name": "api-shanto-travel-songgi",
+  "version": "1.0.0",
+  "description": "RESTful api of shanto travel songgi. Backend api development using expressjs, typescript, prisma,  postgresql and other",
+  "main": "dist/server.js",
+  "repository": "https://github.com/mfarhadattari/api-shanto-travel-songgi",
+  "author": {
+    "name": "Mohammad Farhad",
+    "email": "mfarhad.dev@gmail.com",
+    "url": "https://mfarhad-dev.vercel.app"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "db_sync": "npx prisma migrate dev",
+    "db_studio": "prisma studio",
+    "lint": "eslint src/**/*",
+    "lint --fix": "eslint src/**/* --fix",
+    "format": "npx prettier src/**/* --write",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "http-status": "^1.7.4",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.9.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^22.3.0",
+    "@types/nodemailer": "^6.4.15",
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.9.0",
+    "prettier": "^3.3.3",
+    "prisma": "^5.18.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.1.0"
+  }
+}
