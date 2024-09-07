@@ -1,38 +1,40 @@
+import { USER_ROLE } from '@prisma/client';
 import dotenv from 'dotenv';
 import path from 'path';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 const config = {
-  port: process.env.PORT,
-  node_env: process.env.NODE_ENV,
-  app_name: process.env.APP_NAME,
-  client_url: process.env.CLIENT_URL,
+  port: Number(process.env.PORT),
+  node_env: process.env.NODE_ENV as string,
+  app_name: process.env.APP_NAME as string,
+  client_url: process.env.CLIENT_URL as string,
   jwt: {
-    access_token_secret: process.env.ACCESS_JWT_SECRET,
-    access_token_expire: process.env.ACCESS_JWT_EXPIRE,
-    refresh_token_secret: process.env.REFRESH_JWT_SECRET,
-    refresh_token_expire: process.env.REFRESH_JWT_EXPIRE,
-    reset_token_secret: process.env.RESET_JWT_SECRET,
-    reset_token_expire: process.env.RESET_JWT_EXPIRE,
+    access_token_secret: process.env.ACCESS_JWT_SECRET as string,
+    access_token_expire: process.env.ACCESS_JWT_EXPIRE as string,
+    refresh_token_secret: process.env.REFRESH_JWT_SECRET as string,
+    refresh_token_expire: process.env.REFRESH_JWT_EXPIRE as string,
+    reset_token_secret: process.env.RESET_JWT_SECRET as string,
+    reset_token_expire: process.env.RESET_JWT_EXPIRE as string,
   },
   superAdmin: {
-    name: process.env.SUPER_ADMIN_NAME,
-    email: process.env.SUPER_ADMIN_EMAIL,
-    password: process.env.SUPER_ADMIN_PASS,
+    username: process.env.SUPER_ADMIN_NAME as string,
+    email: process.env.SUPER_ADMIN_EMAIL as string,
+    password: process.env.SUPER_ADMIN_PASS as string,
+    role: USER_ROLE.super_admin,
   },
   mail: {
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
+    host: process.env.MAIL_HOST as string,
+    port: Number(process.env.MAIL_PORT),
     auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
+      user: process.env.MAIL_USER as string,
+      pass: process.env.MAIL_PASS as string,
     },
   },
   cloud: {
-    cloud_name: process.env.CLOUD_NAME,
-    cloud_api: process.env.CLOUD_API,
-    cloud_secret: process.env.CLOUD_SECRET,
+    cloud_name: process.env.CLOUD_NAME as string,
+    cloud_api: process.env.CLOUD_API as string,
+    cloud_secret: process.env.CLOUD_SECRET as string,
   },
 };
 

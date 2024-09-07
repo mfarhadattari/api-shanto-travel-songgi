@@ -2,6 +2,7 @@
 import { Server } from 'http';
 import app from './app';
 import config from './app/config';
+import seedAdmin from './app/utils/seedAdmin';
 
 let server: Server;
 
@@ -12,6 +13,8 @@ let server: Server;
   server = app.listen(config.port, () => {
     console.log(`[${config.app_name}]: is running...✅`);
   });
+
+  await seedAdmin(config.superAdmin);
 
   const existHandler = () => {
     if (server) {
