@@ -34,3 +34,15 @@ export const generateToken = async (
     throw new ApiError(httpStatus.BAD_REQUEST, error.message);
   }
 };
+
+export const decodeToken = async (token: string, secret: string) => {
+  try {
+    const decoded = await jwt.verify(token, secret);
+    if (!decoded) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Token is invalid');
+    }
+    return decoded;
+  } catch (error: any) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, error.message);
+  }
+};

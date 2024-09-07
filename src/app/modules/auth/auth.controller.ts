@@ -33,4 +33,16 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AuthControllers = { registerUser, loginUser };
+/* --------------->> Get User Profile <---------------- */
+const userProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthServices.userProfile(req.user);
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Profile retrieve successfully.',
+    data: result,
+  });
+});
+
+export const AuthControllers = { registerUser, loginUser, userProfile };
