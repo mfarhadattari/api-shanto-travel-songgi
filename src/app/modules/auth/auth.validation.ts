@@ -23,7 +23,20 @@ const loginUser = z.object({
   }),
 });
 
+const updateUser = z.object({
+  body: z.object({
+    username: z.string().optional(),
+    email: z
+      .string()
+      .email({
+        message: 'Please provide valid email address',
+      })
+      .optional(),
+  }),
+});
+
 export const AuthValidationSchemas = {
   registerUser,
   loginUser,
+  updateUser,
 };

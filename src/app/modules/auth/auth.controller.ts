@@ -45,4 +45,21 @@ const userProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const AuthControllers = { registerUser, loginUser, userProfile };
+/* --------------->> Update User Profile <---------------- */
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthServices.updateProfile(req.user, req.body);
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Profile updated successfully.',
+    data: result,
+  });
+});
+
+export const AuthControllers = {
+  registerUser,
+  loginUser,
+  userProfile,
+  updateProfile,
+};

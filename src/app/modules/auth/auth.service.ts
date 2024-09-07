@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import prismaDB from '../../../prismaDB';
 import ApiError from '../../error/ApiError';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
-import { ILoginUser, IRegisterUser } from './auth.interface';
+import { ILoginUser, IRegisterUser, IUpdateUser } from './auth.interface';
 import { USER_STATUS } from '@prisma/client';
 import { generateToken, ITokenPayload } from '../../utils/jwt';
 import config from '../../config';
@@ -101,4 +101,53 @@ const userProfile = async (user: ITokenPayload) => {
   return result;
 };
 
-export const AuthServices = { registerUser, loginUser, userProfile };
+/* --------------->> Update Profile <---------------- */
+const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
+  // check if email and its already exist
+  if (payload.email) {
+    const emailAlreadyUsed = await prismaDB.user.findUnique({
+      where: {
+        email: payload.email,
+      },
+    });
+    if (emailAlreadyUsed) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'Email is already in use');
+    }
+  }
+
+  // update info
+  await prismaDB.user.update({
+    where: {
+      id: user.id,
+    },
+    data: payload,
+  });
+
+  // retrieve new info
+  const result = await prismaDB.user.findUnique({
+    where: {
+      id: user.id,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      role: true,
+      status: true,
+      isPasswordChanged: true,
+      createdAt: true,
+      updatedAt: true,
+      trip: true,
+      tripReq: true,
+    },
+  });
+
+  return result;
+};
+
+export const AuthServices = {
+  registerUser,
+  loginUser,
+  userProfile,
+  updateProfile,
+};
