@@ -13,3 +13,18 @@ export interface IUpdateUser {
   username?: string;
   email?: string;
 }
+
+export interface IChangePassword {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IForgetPassword {
+  email: string;
+}
+
+export interface IResetPassword {
+  email: string;
+  token: string;
+  password: string;
+}

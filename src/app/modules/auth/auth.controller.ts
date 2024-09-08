@@ -5,7 +5,7 @@ import sendResponse from '../../utils/sendResponse';
 import catchAsync from '../../utils/catchAsync';
 import config from '../../config';
 
-/* --------------->> Register User <---------------- */
+/* --------------->> Register User <<---------------- */
 const registerUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.registerUser(req.body);
   sendResponse(res, {
@@ -16,7 +16,7 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Login User <---------------- */
+/* --------------->> Login User <<---------------- */
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken, ...result } = await AuthServices.loginUser(req.body);
 
@@ -33,7 +33,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Get User Profile <---------------- */
+/* --------------->> Get User Profile <<---------------- */
 const userProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.userProfile(req.user);
 
@@ -45,7 +45,7 @@ const userProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Update User Profile <---------------- */
+/* --------------->> Update User Profile <<---------------- */
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.updateProfile(req.user, req.body);
 
@@ -57,7 +57,18 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Forget Password <---------------- */
+/* --------------->> Change Password <<---------------- */
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  await AuthServices.changePassword(req.user, req.body);
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Password change successfully.',
+  });
+});
+
+/* --------------->> Forget Password <<---------------- */
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
   await AuthServices.forgetPassword(req.body);
 
@@ -68,7 +79,7 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Reset Password <---------------- */
+/* --------------->> Reset Password <<---------------- */
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const payload = {
     email: req.query.email as string,
@@ -89,6 +100,7 @@ export const AuthControllers = {
   loginUser,
   userProfile,
   updateProfile,
+  changePassword,
   forgetPassword,
   resetPassword,
 };

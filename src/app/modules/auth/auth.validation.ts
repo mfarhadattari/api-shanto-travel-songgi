@@ -35,6 +35,21 @@ const updateUser = z.object({
   }),
 });
 
+const changePassword = z.object({
+  body: z.object({
+    oldPassword: z
+      .string({ required_error: 'Please provide password' })
+      .min(6, {
+        message: 'Password must be at least 6 characters long',
+      }),
+    newPassword: z
+      .string({ required_error: 'Please provide password' })
+      .min(6, {
+        message: 'Password must be at least 6 characters long',
+      }),
+  }),
+});
+
 const forgetPassword = z.object({
   body: z.object({
     email: z.string({ required_error: 'Please provide email' }).email({
@@ -55,6 +70,7 @@ export const AuthValidationSchemas = {
   registerUser,
   loginUser,
   updateUser,
+  changePassword,
   resetPassword,
   forgetPassword,
 };

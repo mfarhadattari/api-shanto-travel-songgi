@@ -2,13 +2,20 @@ import httpStatus from 'http-status';
 import prismaDB from '../../../prismaDB';
 import ApiError from '../../error/ApiError';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
-import { ILoginUser, IRegisterUser, IUpdateUser } from './auth.interface';
+import {
+  IChangePassword,
+  IForgetPassword,
+  ILoginUser,
+  IRegisterUser,
+  IResetPassword,
+  IUpdateUser,
+} from './auth.interface';
 import { USER_STATUS } from '@prisma/client';
 import { decodeToken, generateToken, ITokenPayload } from '../../utils/jwt';
 import config from '../../config';
 import { sendPasswordResetMail } from './auth.utils';
 
-/* --------------->> Register User <---------------- */
+/* --------------->> Register User <<---------------- */
 const registerUser = async (payload: IRegisterUser) => {
   // check email is already existing account
   const userExist = await prismaDB.user.findUnique({
@@ -39,7 +46,7 @@ const registerUser = async (payload: IRegisterUser) => {
   return result;
 };
 
-/* --------------->> Login User <---------------- */
+/* --------------->> Login User <<---------------- */
 const loginUser = async (payload: ILoginUser) => {
   // check user existence
   const userExist = await prismaDB.user.findUnique({
@@ -79,7 +86,7 @@ const loginUser = async (payload: ILoginUser) => {
   };
 };
 
-/* --------------->> User Profile <---------------- */
+/* --------------->> User Profile <<---------------- */
 const userProfile = async (user: ITokenPayload) => {
   const result = await prismaDB.user.findUnique({
     where: {
@@ -102,7 +109,7 @@ const userProfile = async (user: ITokenPayload) => {
   return result;
 };
 
-/* --------------->> Update Profile <---------------- */
+/* --------------->> Update Profile <<---------------- */
 const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
   // check if email and its already exist
   if (payload.email) {
@@ -146,8 +153,35 @@ const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
   return result;
 };
 
-/* --------------->> Forget Password <---------------- */
-const forgetPassword = async (payload: { email: string }) => {
+/* --------------->>  Change Password <<---------------- */
+const changePassword = async (
+  user: ITokenPayload,
+  payload: IChangePassword,
+) => {
+  // check password match
+  const userData = await prismaDB.user.findUniqueOrThrow({
+    where: {
+      id: user.id,
+    },
+  });
+
+  await comparePassword(payload.oldPassword, userData.password);
+
+  // update password
+  const password = await hashPassword(payload.newPassword);
+  await prismaDB.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      password,
+      isPasswordChanged: true,
+    },
+  });
+};
+
+/* --------------->> Forget Password <<---------------- */
+const forgetPassword = async (payload: IForgetPassword) => {
   // check user existence
   const isUserExist = await prismaDB.user.findUnique({
     where: {
@@ -175,12 +209,8 @@ const forgetPassword = async (payload: { email: string }) => {
   await sendPasswordResetMail(payload.email, resetLink);
 };
 
-/* --------------->> Reset Password <---------------- */
-const resetPassword = async (payload: {
-  email: string;
-  token: string;
-  password: string;
-}) => {
+/* --------------->> Reset Password <<---------------- */
+const resetPassword = async (payload: IResetPassword) => {
   // check user existence
   const isUserExist = await prismaDB.user.findUnique({
     where: {
@@ -211,6 +241,7 @@ const resetPassword = async (payload: {
     },
     data: {
       password,
+      isPasswordChanged: true,
     },
   });
 
@@ -221,6 +252,7 @@ export const AuthServices = {
   registerUser,
   loginUser,
   userProfile,
+  changePassword,
   updateProfile,
   forgetPassword,
   resetPassword,

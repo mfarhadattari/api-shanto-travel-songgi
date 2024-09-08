@@ -32,6 +32,13 @@ router.patch(
   AuthControllers.updateProfile,
 );
 
+router.patch(
+  '/change-password',
+  authValidator(USER_ROLE.super_admin, USER_ROLE.admin, USER_ROLE.user),
+  reqBodyValidator(AuthValidationSchemas.changePassword),
+  AuthControllers.changePassword,
+);
+
 router.post(
   '/forget-password',
   reqBodyValidator(AuthValidationSchemas.forgetPassword),

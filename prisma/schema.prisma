@@ -43,7 +43,7 @@ model User {
   password          String
   status            USER_STATUS @default(active)
   role              USER_ROLE   @default(user)
-  isPasswordChanged Boolean     @default(true)
+  isPasswordChanged Boolean     @default(false)
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   trip              Trip[]
