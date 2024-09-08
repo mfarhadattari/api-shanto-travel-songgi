@@ -33,6 +33,12 @@ router.patch(
 );
 
 router.post(
+  '/forget-password',
+  reqBodyValidator(AuthValidationSchemas.forgetPassword),
+  AuthControllers.forgetPassword,
+);
+
+router.post(
   '/reset-password',
   reqBodyValidator(AuthValidationSchemas.resetPassword),
   AuthControllers.resetPassword,

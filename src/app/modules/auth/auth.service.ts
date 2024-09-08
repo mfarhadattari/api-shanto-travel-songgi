@@ -4,7 +4,7 @@ import ApiError from '../../error/ApiError';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
 import { ILoginUser, IRegisterUser, IUpdateUser } from './auth.interface';
 import { USER_STATUS } from '@prisma/client';
-import { generateToken, ITokenPayload } from '../../utils/jwt';
+import { decodeToken, generateToken, ITokenPayload } from '../../utils/jwt';
 import config from '../../config';
 import { sendPasswordResetMail } from './auth.utils';
 
@@ -146,8 +146,8 @@ const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
   return result;
 };
 
-/* --------------->> Reset Password <---------------- */
-const resetPassword = async (payload: { email: string }) => {
+/* --------------->> Forget Password <---------------- */
+const forgetPassword = async (payload: { email: string }) => {
   // check user existence
   const isUserExist = await prismaDB.user.findUnique({
     where: {
@@ -175,10 +175,53 @@ const resetPassword = async (payload: { email: string }) => {
   await sendPasswordResetMail(payload.email, resetLink);
 };
 
+/* --------------->> Reset Password <---------------- */
+const resetPassword = async (payload: {
+  email: string;
+  token: string;
+  password: string;
+}) => {
+  // check user existence
+  const isUserExist = await prismaDB.user.findUnique({
+    where: {
+      email: payload.email,
+      status: USER_STATUS.active,
+    },
+  });
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'User not found using this email');
+  }
+
+  // decoded token
+  const decoded = (await decodeToken(
+    payload.token,
+    config.jwt.reset_token_secret,
+  )) as ITokenPayload;
+
+  // check email is matches
+  if (decoded.email != payload.email) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid token');
+  }
+
+  // update password
+  const password = await hashPassword(payload.password);
+  await prismaDB.user.update({
+    where: {
+      email: payload.email,
+    },
+    data: {
+      password,
+    },
+  });
+
+  // inform to user
+};
+
 export const AuthServices = {
   registerUser,
   loginUser,
   userProfile,
   updateProfile,
+  forgetPassword,
   resetPassword,
 };

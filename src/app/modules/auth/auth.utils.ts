@@ -67,8 +67,8 @@ export const sendPasswordResetMail = async (
                 <h1>Password Reset From ${config.app_name}</h1>
             </div>
             <div class="content">
-                <p>You recently requested a password reset for your account.</p>
-                <p>To reset your password, please click on the link below:</p>
+                <p>You recently requested a password reset for your account in ${config.app_name}.</p>
+                <p>To reset your password, please click on the link below within 5minute:</p>
                 <a href=${resetLink}>
                 <button>
                     Reset Password

@@ -57,15 +57,30 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/* --------------->> Reset Password <---------------- */
-const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthServices.resetPassword(req.body);
+/* --------------->> Forget Password <---------------- */
+const forgetPassword = catchAsync(async (req: Request, res: Response) => {
+  await AuthServices.forgetPassword(req.body);
 
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
     message: 'Password reset link sent check email',
-    data: result,
+  });
+});
+
+/* --------------->> Reset Password <---------------- */
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const payload = {
+    email: req.query.email as string,
+    token: req.query.token as string,
+    password: req.body.password as string,
+  };
+  await AuthServices.resetPassword(payload);
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Password reset successfully',
   });
 });
 
@@ -74,5 +89,6 @@ export const AuthControllers = {
   loginUser,
   userProfile,
   updateProfile,
+  forgetPassword,
   resetPassword,
 };
