@@ -13,4 +13,6 @@ router.post(
   TripControllers.createTrip,
 );
 
+router.get('/', TripControllers.getTrips);
+
 export const TripRoutes = router;

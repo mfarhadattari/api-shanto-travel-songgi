@@ -9,3 +9,10 @@ export const TRIPTYPES: TRIP_TYPES[] = [
   'medical',
   'others',
 ];
+
+export const TRIPFILTERABLEFILEDS = [
+  'startDate',
+  'endDate',
+  'type',
+  'searchTerm',
+];

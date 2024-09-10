@@ -1,15 +1,17 @@
 import { Response } from 'express';
 
+export interface IMeta {
+  total: number;
+  page: number;
+  limit: number;
+}
+
 interface IPayload<T> {
   success: boolean;
   message: string;
   status: number;
   data?: T;
-  meta?: {
-    total: number;
-    page: number;
-    limit: number;
-  };
+  meta?: IMeta;
 }
 
 const sendResponse = <T>(res: Response, payload: IPayload<T>) => {

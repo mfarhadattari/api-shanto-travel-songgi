@@ -13,12 +13,12 @@ const createTrip = z.object({
       .string({
         required_error: 'Please provide start date',
       })
-      .datetime(),
+      .date(),
     endDate: z
       .string({
         required_error: 'Please provide end date',
       })
-      .datetime(),
+      .date(),
     type: z.enum([...TRIPTYPES] as [string, ...string[]]),
   }),
 });

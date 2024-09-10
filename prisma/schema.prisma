@@ -59,6 +59,7 @@ model Trip {
   description String
   startDate   DateTime
   endDate     DateTime
+  dates       String
   type        TRIP_TYPES
   photos      String[]
   isDeleted   Boolean    @default(false)
