@@ -5,7 +5,9 @@ import { IOptions } from '../../utils/getOption';
 import ApiError from '../../error/ApiError';
 import httpStatus from 'http-status';
 import { USERROLE, USERSTATUS } from './admin.const';
+import { IUpdateUser } from './admin.interface';
 
+/* --------------------->> Get Users <<-------------- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUsers = async (user: ITokenPayload, query: any, options: IOptions) => {
   const andCondition: Prisma.UserWhereInput[] = [];
@@ -92,6 +94,56 @@ const getUsers = async (user: ITokenPayload, query: any, options: IOptions) => {
   };
 };
 
+/* ---------------------->> Updated User <<---------------- */
+const updateUser = async (
+  user: ITokenPayload,
+  userId: string,
+  payload: IUpdateUser,
+) => {
+  // check user
+  const isUserExist = await prismaDB.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // check user access
+  const isAccess = user.role === 'super_admin' || isUserExist.role === 'user';
+  if (!isAccess) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Unauthorized, not have access');
+  }
+
+  // update user
+  await prismaDB.user.update({
+    where: {
+      id: userId,
+    },
+    data: payload,
+  });
+
+  // get user
+  const result = await prismaDB.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      role: true,
+      status: true,
+      isPasswordChanged: true,
+    },
+  });
+
+  return result;
+};
+
 export const AdminServices = {
   getUsers,
+  updateUser,
 };

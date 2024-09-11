@@ -28,7 +28,7 @@ router.get(
 router.patch(
   '/profile',
   authValidator(USER_ROLE.super_admin, USER_ROLE.admin, USER_ROLE.user),
-  reqBodyValidator(AuthValidationSchemas.updateUser),
+  reqBodyValidator(AuthValidationSchemas.updateProfile),
   AuthControllers.updateProfile,
 );
 

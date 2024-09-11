@@ -9,7 +9,7 @@ export interface ILoginUser {
   password: string;
 }
 
-export interface IUpdateUser {
+export interface IUpdateProfile {
   username?: string;
   email?: string;
 }

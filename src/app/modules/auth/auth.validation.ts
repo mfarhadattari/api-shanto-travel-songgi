@@ -23,7 +23,7 @@ const loginUser = z.object({
   }),
 });
 
-const updateUser = z.object({
+const updateProfile = z.object({
   body: z.object({
     username: z.string().optional(),
     email: z
@@ -69,7 +69,7 @@ const resetPassword = z.object({
 export const AuthValidationSchemas = {
   registerUser,
   loginUser,
-  updateUser,
+  updateProfile,
   changePassword,
   resetPassword,
   forgetPassword,

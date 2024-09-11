@@ -6,6 +6,7 @@ import { AdminServices } from './admin.service';
 import peekObject from '../../utils/peekObject';
 import { ADMINFILTERABLEFIELDS } from './admin.const';
 
+/* --------------------->> Get Users <<-------------- */
 const getUsers = catchAsync(async (req, res) => {
   const options = getOptions(req.query);
   const query = peekObject(req.query, ADMINFILTERABLEFIELDS);
@@ -20,6 +21,19 @@ const getUsers = catchAsync(async (req, res) => {
   });
 });
 
+/* --------------------->> Update User <<-------------- */
+const updateUser = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const result = await AdminServices.updateUser(req.user, userId, req.body);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
 export const AdminControllers = {
   getUsers,
+  updateUser,
 };

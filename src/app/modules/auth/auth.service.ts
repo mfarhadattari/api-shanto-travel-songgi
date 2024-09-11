@@ -8,7 +8,7 @@ import {
   ILoginUser,
   IRegisterUser,
   IResetPassword,
-  IUpdateUser,
+  IUpdateProfile,
 } from './auth.interface';
 import { USER_STATUS } from '@prisma/client';
 import { decodeToken, generateToken, ITokenPayload } from '../../utils/jwt';
@@ -110,7 +110,7 @@ const userProfile = async (user: ITokenPayload) => {
 };
 
 /* --------------->> Update Profile <<---------------- */
-const updateProfile = async (user: ITokenPayload, payload: IUpdateUser) => {
+const updateProfile = async (user: ITokenPayload, payload: IUpdateProfile) => {
   // check if email and its already exist
   if (payload.email) {
     const emailAlreadyUsed = await prismaDB.user.findUnique({
