@@ -75,7 +75,6 @@ model Trip {
 }
 
 model TripReq {
-  id     String          @id @default(uuid())
   tripId String
   userId String
   status TRIP_REQ_STATUS @default(pending)
@@ -86,5 +85,6 @@ model TripReq {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@id([userId, tripId])
   @@map("tripReqs")
 }

@@ -25,13 +25,68 @@ const getTrips = catchAsync(async (req, res) => {
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
-    message: 'Trip retrieve successfully',
+    message: 'Trips retrieve successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+/* ------------->> Get Trip Details <<------------ */
+const getTripDetails = catchAsync(async (req, res) => {
+  const tripId = req.params.tripId;
+  const result = await TripServices.getTripDetails(tripId);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Trip retrieve successfully',
+    data: result,
+  });
+});
+
+/* ------------->> Get Request of Trip <<------------ */
+const getTripRequests = catchAsync(async (req, res) => {
+  const tripId = req.params.tripId;
+  const options = getOptions(req.query);
+  const result = await TripServices.getTripRequests(tripId, options);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Trip request retrieve successfully',
+    data: result,
+  });
+});
+
+/* ------------->> Request For Trip <<------------ */
+const requestForTrip = catchAsync(async (req, res) => {
+  const tripId = req.params.tripId;
+  const result = await TripServices.requestForTrip(req.user, tripId);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Trip requested successfully',
+    data: result,
+  });
+});
+
+/* ------------->> Accept or Reject Trip Request <<------------ */
+const acceptOrRejectTripRequest = catchAsync(async (req, res) => {
+  const result = await TripServices.acceptOrRejectTripRequest(
+    req.user,
+    req.body,
+  );
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: `Trip ${result?.status} successfully`,
+    data: result,
   });
 });
 
 export const TripControllers = {
   createTrip,
   getTrips,
+  getTripDetails,
+  getTripRequests,
+  requestForTrip,
+  acceptOrRejectTripRequest,
 };

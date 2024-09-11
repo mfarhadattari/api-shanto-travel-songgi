@@ -1,4 +1,4 @@
-import { TRIP_TYPES } from '@prisma/client';
+import { TRIP_REQ_STATUS, TRIP_TYPES } from '@prisma/client';
 
 export interface ICreateTrip {
   destination: string;
@@ -6,4 +6,10 @@ export interface ICreateTrip {
   startDate: Date;
   endDate: Date;
   type: TRIP_TYPES;
+}
+
+export interface IUpdateTripReqStatus {
+  tripId: string;
+  userId: string;
+  status: TRIP_REQ_STATUS;
 }

@@ -15,4 +15,21 @@ router.post(
 
 router.get('/', TripControllers.getTrips);
 
+router.get('/:tripId', TripControllers.getTripDetails);
+
+router.get('/:tripId/request', TripControllers.getTripRequests);
+
+router.post(
+  '/:tripId/request',
+  authValidator('user', 'super_admin', 'admin'),
+  TripControllers.requestForTrip,
+);
+
+router.patch(
+  '/request-status',
+  authValidator('user', 'super_admin', 'admin'),
+  reqBodyValidator(TripValidationSchemas.updateTripReqStatus),
+  TripControllers.acceptOrRejectTripRequest,
+);
+
 export const TripRoutes = router;

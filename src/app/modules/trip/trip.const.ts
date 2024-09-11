@@ -1,4 +1,4 @@
-import { TRIP_TYPES } from '@prisma/client';
+import { TRIP_REQ_STATUS, TRIP_TYPES } from '@prisma/client';
 
 export const TRIPTYPES: TRIP_TYPES[] = [
   'adventure',
@@ -15,4 +15,10 @@ export const TRIPFILTERABLEFILEDS = [
   'endDate',
   'type',
   'searchTerm',
+];
+
+export const TRIPREQSTATUS: TRIP_REQ_STATUS[] = [
+  'pending',
+  'approved',
+  'rejected',
 ];
