@@ -15,7 +15,26 @@ router.post(
 
 router.get('/', TripControllers.getTrips);
 
+router.get(
+  '/my-trips',
+  authValidator('user', 'admin', 'super_admin'),
+  TripControllers.getMyTrips,
+);
+
 router.get('/:tripId', TripControllers.getTripDetails);
+
+router.delete(
+  '/:tripId',
+  authValidator('user', 'admin', 'super_admin'),
+  TripControllers.deleteTrip,
+);
+
+router.patch(
+  '/:tripId',
+  authValidator('user', 'admin', 'super_admin'),
+  reqBodyValidator(TripValidationSchemas.updateTrip),
+  TripControllers.updateTrip,
+);
 
 router.get('/:tripId/request', TripControllers.getTripRequests);
 

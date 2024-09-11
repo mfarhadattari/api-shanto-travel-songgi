@@ -2,7 +2,7 @@ import { ITokenPayload } from '../../utils/jwt';
 import { ICreateTrip, IUpdateTripReqStatus } from './trip.interface';
 import prismaDB from '../../../prismaDB';
 import { IOptions } from '../../utils/getOption';
-import { Prisma } from '@prisma/client';
+import { Prisma, Trip } from '@prisma/client';
 import { TRIPTYPES } from './trip.const';
 import dayjs from 'dayjs';
 import ApiError from '../../error/ApiError';
@@ -143,6 +143,120 @@ const getTrips = async (query: any, options: IOptions) => {
   };
 };
 
+/* ------------->> Get My Trips <<------------ */
+const getMyTrips = async (
+  user: ITokenPayload,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  query: any,
+  options: IOptions,
+) => {
+  const { searchTerm, ...filterQuery } = query;
+
+  const andConditions: Prisma.TripWhereInput[] = [
+    {
+      userId: user.id,
+      isDeleted: false,
+    },
+  ];
+
+  // searching
+  if (searchTerm) {
+    const searchCondition: Prisma.TripWhereInput[] = [
+      {
+        destination: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      },
+      {
+        dates: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      },
+    ];
+
+    if (TRIPTYPES.includes(searchTerm)) {
+      searchCondition.push({
+        type: {
+          equals: searchTerm,
+        },
+      });
+    }
+
+    andConditions.push({
+      OR: searchCondition,
+    });
+  }
+
+  // filtering
+  const filterCondition: Prisma.TripWhereInput[] = [];
+  if (filterQuery.type) {
+    if (TRIPTYPES.includes(filterQuery.type)) {
+      filterCondition.push({
+        type: {
+          equals: filterQuery.type,
+        },
+      });
+    }
+  }
+
+  if (filterQuery.startDate) {
+    filterCondition.push({
+      startDate: {
+        gte: new Date(filterQuery.startDate),
+      },
+    });
+  }
+
+  if (filterQuery.endDate) {
+    filterCondition.push({
+      endDate: {
+        lte: new Date(filterQuery.endDate),
+      },
+    });
+  }
+
+  andConditions.push({
+    AND: filterCondition,
+  });
+
+  const result = await prismaDB.trip.findMany({
+    where: {
+      AND: andConditions,
+    },
+    skip: options.skip,
+    take: options.limit,
+    orderBy: {
+      [options.sortBy]: options.sortOrder,
+    },
+    include: {
+      tripReq: {
+        select: {
+          userId: true,
+          tripId: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  const total = await prismaDB.trip.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+
+  return {
+    data: result,
+    meta: {
+      total: total,
+      page: options.page,
+      limit: options.limit,
+    },
+  };
+};
+
 /* ------------->> Get Trip Details <<------------ */
 const getTripDetails = async (tripId: string) => {
   const result = await prismaDB.trip.findUnique({
@@ -168,6 +282,86 @@ const getTripDetails = async (tripId: string) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip not found');
   }
+
+  return result;
+};
+
+/* ------------->> Delete Trip  <<------------ */
+const deleteTrip = async (user: ITokenPayload, tripId: string) => {
+  // check trip
+  const trip = await prismaDB.trip.findUnique({
+    where: {
+      id: tripId,
+      userId: user.id,
+      isDeleted: false,
+    },
+  });
+
+  if (!trip) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Trip in not found');
+  }
+
+  await prismaDB.$transaction(async (txClient) => {
+    // delete trip request
+    await txClient.tripReq.deleteMany({
+      where: {
+        tripId: tripId,
+      },
+    });
+
+    // delete trip
+    await txClient.trip.update({
+      where: { id: tripId },
+      data: { isDeleted: true },
+    });
+  });
+};
+
+/* ------------->> Delete Trip  <<------------ */
+const updateTrip = async (
+  user: ITokenPayload,
+  tripId: string,
+  payload: Trip,
+) => {
+  // check trip
+  const trip = await prismaDB.trip.findUnique({
+    where: {
+      id: tripId,
+      userId: user.id,
+      isDeleted: false,
+    },
+  });
+
+  if (!trip) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Trip in not found');
+  }
+
+  // update trip
+  await prismaDB.trip.update({
+    where: { id: tripId },
+    data: payload,
+  });
+
+  // get trip details
+  const result = await prismaDB.trip.findUnique({
+    where: { id: tripId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
+      tripReq: {
+        select: {
+          userId: true,
+          tripId: true,
+          status: true,
+        },
+      },
+    },
+  });
 
   return result;
 };
@@ -316,7 +510,10 @@ const acceptOrRejectTripRequest = async (
 export const TripServices = {
   createTrip,
   getTrips,
+  getMyTrips,
   getTripDetails,
+  deleteTrip,
+  updateTrip,
   getTripRequests,
   requestForTrip,
   acceptOrRejectTripRequest,
