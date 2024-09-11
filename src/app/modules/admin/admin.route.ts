@@ -19,4 +19,17 @@ router.patch(
   AdminControllers.updateUser,
 );
 
+router.delete(
+  '/trips/:tripId',
+  authValidator('super_admin', 'admin'),
+  AdminControllers.deleteTrip,
+);
+
+router.patch(
+  '/trips/:tripId',
+  authValidator('super_admin', 'admin'),
+  reqBodyValidator(AdminValidationSchemas.updateTrip),
+  AdminControllers.updateTrip,
+);
+
 export const AdminRoutes = router;

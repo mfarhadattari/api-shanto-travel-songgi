@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Trip } from '@prisma/client';
 import prismaDB from '../../../prismaDB';
 import { ITokenPayload } from '../../utils/jwt';
 import { IOptions } from '../../utils/getOption';
@@ -143,7 +143,71 @@ const updateUser = async (
   return result;
 };
 
+/* ---------------------->> Delete Trip <<-------------------- */
+const deleteTrip = async (tripId: string) => {
+  // check trip
+  const tripExist = await prismaDB.trip.findUnique({
+    where: {
+      id: tripId,
+      isDeleted: false,
+    },
+  });
+
+  if (!tripExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Trip is not found');
+  }
+
+  await prismaDB.$transaction(async (txClient) => {
+    try {
+      // delete trip request
+      await txClient.tripReq.deleteMany({
+        where: {
+          tripId: tripId,
+        },
+      });
+
+      // delete trip
+      await txClient.trip.update({
+        where: { id: tripId },
+        data: {
+          isDeleted: true,
+        },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+    }
+  });
+};
+
+/* ---------------------->> Update Trip <<-------------------- */
+const updateTrip = async (tripId: string, payload: Trip) => {
+  // check trip
+  const tripExist = await prismaDB.trip.findUnique({
+    where: {
+      id: tripId,
+      isDeleted: false,
+    },
+  });
+
+  if (!tripExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Trip is not found');
+  }
+
+  // update trip
+  const result = await prismaDB.trip.update({
+    where: {
+      id: tripId,
+    },
+    data: payload,
+  });
+
+  return result;
+};
+
 export const AdminServices = {
   getUsers,
   updateUser,
+  deleteTrip,
+  updateTrip,
 };

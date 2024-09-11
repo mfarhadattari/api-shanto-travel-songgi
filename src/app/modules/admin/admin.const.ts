@@ -1,6 +1,6 @@
 import { USER_ROLE, USER_STATUS } from '@prisma/client';
 
-export const ADMINFILTERABLEFIELDS = ['status', 'role', 'searchTerm'];
+export const USERSFILTERABLEFIELDS = ['status', 'role', 'searchTerm'];
 
 export const USERSTATUS: USER_STATUS[] = ['active', 'blocked'];
 

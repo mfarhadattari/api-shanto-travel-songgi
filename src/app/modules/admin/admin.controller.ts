@@ -4,12 +4,12 @@ import getOptions from '../../utils/getOption';
 import sendResponse from '../../utils/sendResponse';
 import { AdminServices } from './admin.service';
 import peekObject from '../../utils/peekObject';
-import { ADMINFILTERABLEFIELDS } from './admin.const';
+import { USERSFILTERABLEFIELDS } from './admin.const';
 
 /* --------------------->> Get Users <<-------------- */
 const getUsers = catchAsync(async (req, res) => {
   const options = getOptions(req.query);
-  const query = peekObject(req.query, ADMINFILTERABLEFIELDS);
+  const query = peekObject(req.query, USERSFILTERABLEFIELDS);
   const result = await AdminServices.getUsers(req.user, query, options);
 
   sendResponse(res, {
@@ -33,7 +33,32 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+/* --------------------->> delete trip <<-------------- */
+const deleteTrip = catchAsync(async (req, res) => {
+  const tripId = req.params.tripId;
+  await AdminServices.deleteTrip(tripId);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Trip deleted successfully',
+  });
+});
+
+/* --------------------->> update trip <<-------------- */
+const updateTrip = catchAsync(async (req, res) => {
+  const tripId = req.params.tripId;
+  const result = await AdminServices.updateTrip(tripId, req.body);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Trip updated successfully',
+    data: result,
+  });
+});
+
 export const AdminControllers = {
   getUsers,
   updateUser,
+  deleteTrip,
+  updateTrip,
 };
