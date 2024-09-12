@@ -14,9 +14,10 @@ import { USER_STATUS } from '@prisma/client';
 import { decodeToken, generateToken, ITokenPayload } from '../../utils/jwt';
 import config from '../../config';
 import { sendPasswordResetMail } from './auth.utils';
+import { IFile, uploadToCloud } from '../../utils/fileUpload';
 
 /* --------------->> Register User <<---------------- */
-const registerUser = async (payload: IRegisterUser) => {
+const registerUser = async (payload: IRegisterUser, file: IFile) => {
   // check email is already existing account
   const userExist = await prismaDB.user.findUnique({
     where: {
@@ -28,6 +29,13 @@ const registerUser = async (payload: IRegisterUser) => {
     throw new ApiError(httpStatus.FORBIDDEN, 'Email is already in use');
   }
 
+  // upload file
+  if (file) {
+    const id = `avatar-${payload.email}`;
+    const res = await uploadToCloud(file, id, 'user-avatars');
+    payload.avatar = res.secure_url;
+  }
+
   //   store user into db
   payload.password = await hashPassword(payload.password);
 
@@ -37,6 +45,7 @@ const registerUser = async (payload: IRegisterUser) => {
       id: true,
       email: true,
       username: true,
+      avatar: true,
       role: true,
       status: true,
       createdAt: true,
@@ -110,7 +119,11 @@ const userProfile = async (user: ITokenPayload) => {
 };
 
 /* --------------->> Update Profile <<---------------- */
-const updateProfile = async (user: ITokenPayload, payload: IUpdateProfile) => {
+const updateProfile = async (
+  user: ITokenPayload,
+  payload: IUpdateProfile,
+  file: IFile,
+) => {
   // check if email and its already exist
   if (payload.email) {
     const emailAlreadyUsed = await prismaDB.user.findUnique({
@@ -121,6 +134,13 @@ const updateProfile = async (user: ITokenPayload, payload: IUpdateProfile) => {
     if (emailAlreadyUsed) {
       throw new ApiError(httpStatus.FORBIDDEN, 'Email is already in use');
     }
+  }
+
+  // upload file
+  if (file) {
+    const id = `avatar-${payload.email}`;
+    const res = await uploadToCloud(file, id, 'user-avatars');
+    payload.avatar = res.secure_url;
   }
 
   // update info
@@ -141,6 +161,7 @@ const updateProfile = async (user: ITokenPayload, payload: IUpdateProfile) => {
       username: true,
       email: true,
       role: true,
+      avatar: true,
       status: true,
       isPasswordChanged: true,
       createdAt: true,

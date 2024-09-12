@@ -2,6 +2,7 @@ export interface IRegisterUser {
   username: string;
   email: string;
   password: string;
+  avatar?: string;
 }
 
 export interface ILoginUser {
@@ -12,6 +13,7 @@ export interface ILoginUser {
 export interface IUpdateProfile {
   username?: string;
   email?: string;
+  avatar?: string;
 }
 
 export interface IChangePassword {

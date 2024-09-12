@@ -6,6 +6,7 @@ import ApiError from '../../error/ApiError';
 import httpStatus from 'http-status';
 import { USERROLE, USERSTATUS } from './admin.const';
 import { IUpdateUser } from './admin.interface';
+import { IFile, uploadToCloud } from '../../utils/fileUpload';
 
 /* --------------------->> Get Users <<-------------- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,7 +182,7 @@ const deleteTrip = async (tripId: string) => {
 };
 
 /* ---------------------->> Update Trip <<-------------------- */
-const updateTrip = async (tripId: string, payload: Trip) => {
+const updateTrip = async (tripId: string, payload: Trip, files: IFile[]) => {
   // check trip
   const tripExist = await prismaDB.trip.findUnique({
     where: {
@@ -192,6 +193,23 @@ const updateTrip = async (tripId: string, payload: Trip) => {
 
   if (!tripExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip is not found');
+  }
+
+  // upload photos
+  if (files && files.length > 0) {
+    const photos: string[] = [];
+    const id = `userId:${tripExist.userId}-destination:${payload.destination}`;
+    for (let i = 0; i < (files as IFile[]).length; i++) {
+      const res = await uploadToCloud(
+        (files as IFile[])[i],
+        `${id}-${new Date()}`,
+        'trips',
+      );
+      if (res.secure_url) {
+        photos.push(res.secure_url);
+      }
+    }
+    payload.photos = photos;
   }
 
   // update trip

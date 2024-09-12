@@ -5,6 +5,7 @@ import sendResponse from '../../utils/sendResponse';
 import { AdminServices } from './admin.service';
 import peekObject from '../../utils/peekObject';
 import { USERSFILTERABLEFIELDS } from './admin.const';
+import { IFile } from '../../utils/fileUpload';
 
 /* --------------------->> Get Users <<-------------- */
 const getUsers = catchAsync(async (req, res) => {
@@ -47,7 +48,11 @@ const deleteTrip = catchAsync(async (req, res) => {
 /* --------------------->> update trip <<-------------- */
 const updateTrip = catchAsync(async (req, res) => {
   const tripId = req.params.tripId;
-  const result = await AdminServices.updateTrip(tripId, req.body);
+  const result = await AdminServices.updateTrip(
+    tripId,
+    req.body,
+    req.files as IFile[],
+  );
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,

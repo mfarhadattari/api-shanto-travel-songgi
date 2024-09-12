@@ -4,10 +4,11 @@ import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
 import catchAsync from '../../utils/catchAsync';
 import config from '../../config';
+import { IFile } from '../../utils/fileUpload';
 
 /* --------------->> Register User <<---------------- */
 const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthServices.registerUser(req.body);
+  const result = await AuthServices.registerUser(req.body, req.file as IFile);
   sendResponse(res, {
     status: httpStatus.CREATED,
     success: true,
@@ -47,7 +48,11 @@ const userProfile = catchAsync(async (req: Request, res: Response) => {
 
 /* --------------->> Update User Profile <<---------------- */
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthServices.updateProfile(req.user, req.body);
+  const result = await AuthServices.updateProfile(
+    req.user,
+    req.body,
+    req.file as IFile,
+  );
 
   sendResponse(res, {
     status: httpStatus.OK,
