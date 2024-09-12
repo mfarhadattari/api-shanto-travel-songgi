@@ -27,6 +27,15 @@ router.get(
   authValidator('user', 'admin', 'super_admin'),
   TripControllers.getMyTrips,
 );
+
+/* ----------->> JOIN REQUEST STATUS UPDATE  API (PRIVATE) <<----------- */
+router.patch(
+  '/request-status',
+  authValidator('user', 'super_admin', 'admin'),
+  reqBodyValidator(TripValidationSchemas.updateTripReqStatus),
+  TripControllers.acceptOrRejectTripRequest,
+);
+
 /*  ---------------->> GET TRIP DETAILS API (PUBLIC) <<-------------- */
 router.get('/:tripId', TripControllers.getTripDetails);
 
@@ -55,14 +64,6 @@ router.post(
   '/:tripId/request',
   authValidator('user', 'super_admin', 'admin'),
   TripControllers.requestForTrip,
-);
-
-/* ----------->> JOIN REQUEST STATUS UPDATE  API (PRIVATE) <<----------- */
-router.patch(
-  '/request-status',
-  authValidator('user', 'super_admin', 'admin'),
-  reqBodyValidator(TripValidationSchemas.updateTripReqStatus),
-  TripControllers.acceptOrRejectTripRequest,
 );
 
 export const TripRoutes = router;

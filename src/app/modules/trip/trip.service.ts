@@ -337,7 +337,7 @@ const deleteTrip = async (user: ITokenPayload, tripId: string) => {
   });
 };
 
-/* ------------->> Delete Trip  <<------------ */
+/* ------------->> Update Trip  <<------------ */
 const updateTrip = async (
   user: ITokenPayload,
   tripId: string,
