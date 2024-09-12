@@ -5,10 +5,15 @@ import { TripServices } from './trip.service';
 import getOptions from '../../utils/getOption';
 import peekObject from '../../utils/peekObject';
 import { TRIPFILTERABLEFILEDS } from './trip.const';
+import { IFile } from '../../utils/fileUpload';
 
 /* ------------->> Create Trip <<------------ */
 const createTrip = catchAsync(async (req, res) => {
-  const result = await TripServices.createTrip(req.user, req.body);
+  const result = await TripServices.createTrip(
+    req.user,
+    req.body,
+    req.files as IFile[],
+  );
   sendResponse(res, {
     status: httpStatus.CREATED,
     success: true,

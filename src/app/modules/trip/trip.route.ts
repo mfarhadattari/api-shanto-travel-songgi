@@ -3,12 +3,16 @@ import authValidator from '../../middlewares/authValidator';
 import reqBodyValidator from '../../middlewares/reqBodyValidator';
 import { TripValidationSchemas } from './trip.validation';
 import { TripControllers } from './trip.controller';
+import { upload } from '../../utils/fileUpload';
+import parseFormData from '../../middlewares/parseFormData';
 
 const router = express.Router();
 
 router.post(
   '/',
   authValidator('user', 'super_admin', 'admin'),
+  upload.array('files'),
+  parseFormData,
   reqBodyValidator(TripValidationSchemas.createTrip),
   TripControllers.createTrip,
 );

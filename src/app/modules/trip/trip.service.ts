@@ -7,11 +7,30 @@ import { TRIPTYPES } from './trip.const';
 import dayjs from 'dayjs';
 import ApiError from '../../error/ApiError';
 import httpStatus from 'http-status';
+import { IFile, uploadToCloud } from '../../utils/fileUpload';
 
 /* ------------->> Create Trip <<------------ */
-const createTrip = async (user: ITokenPayload, payload: ICreateTrip) => {
+const createTrip = async (
+  user: ITokenPayload,
+  payload: ICreateTrip,
+  files: IFile[],
+) => {
   const dates = `${dayjs(payload.startDate).format('YYYY-MM-DD')}:${dayjs(payload.endDate).format('YYYY-MM-DD')}`;
-
+  if (files && files.length > 0) {
+    const photos: string[] = [];
+    const id = `userId:${user.id}-destination:${payload.destination}`;
+    for (let i = 0; i < (files as IFile[]).length; i++) {
+      const res = await uploadToCloud(
+        (files as IFile[])[i],
+        `${id}-${new Date()}`,
+        'trips',
+      );
+      if (res.secure_url) {
+        photos.push(res.secure_url);
+      }
+    }
+    payload.photos = photos;
+  }
   const result = await prismaDB.trip.create({
     data: {
       destination: payload.destination,
@@ -20,6 +39,7 @@ const createTrip = async (user: ITokenPayload, payload: ICreateTrip) => {
       endDate: new Date(payload.endDate),
       dates: dates,
       type: payload.type,
+      photos: payload.photos,
       userId: user.id,
     },
   });

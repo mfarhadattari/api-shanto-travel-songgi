@@ -6,6 +6,7 @@ export interface ICreateTrip {
   startDate: Date;
   endDate: Date;
   type: TRIP_TYPES;
+  photos?: string[];
 }
 
 export interface IUpdateTripReqStatus {
