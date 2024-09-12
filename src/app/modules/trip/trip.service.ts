@@ -342,6 +342,7 @@ const updateTrip = async (
   user: ITokenPayload,
   tripId: string,
   payload: Trip,
+  files: IFile[],
 ) => {
   // check trip
   const trip = await prismaDB.trip.findUnique({
@@ -354,6 +355,22 @@ const updateTrip = async (
 
   if (!trip) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Trip in not found');
+  }
+
+  if (files && files.length > 0) {
+    const photos: string[] = [];
+    const id = `userId:${user.id}-destination:${payload.destination}`;
+    for (let i = 0; i < (files as IFile[]).length; i++) {
+      const res = await uploadToCloud(
+        (files as IFile[])[i],
+        `${id}-${new Date()}`,
+        'trips',
+      );
+      if (res.secure_url) {
+        photos.push(res.secure_url);
+      }
+    }
+    payload.photos = photos;
   }
 
   // update trip

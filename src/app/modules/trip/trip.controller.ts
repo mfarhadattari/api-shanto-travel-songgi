@@ -76,7 +76,12 @@ const deleteTrip = catchAsync(async (req, res) => {
 /* ------------->> Update Trip <<------------ */
 const updateTrip = catchAsync(async (req, res) => {
   const tripId = req.params.tripId;
-  const result = await TripServices.updateTrip(req.user, tripId, req.body);
+  const result = await TripServices.updateTrip(
+    req.user,
+    tripId,
+    req.body,
+    req.files as IFile[],
+  );
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
